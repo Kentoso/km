@@ -21,11 +21,18 @@ def find_position_of_first_non_zero(number):
 def func(x):
     return -np.log(np.cos(x))
 
+def I_2_func(x):
+    return -np.log(np.sin(x)/x)
+
 def left_rectangle(f, x, h):
     new_X = np.linspace(0, x, np.ceil(x / h).astype(np.int64) + 1)
     estimated_value = h * np.sum(f(new_X[:-1]))
     return estimated_value
 
+def left_rectangle_skip_zero(f, x, h):
+    new_X = np.linspace(0, x, np.ceil(x / h).astype(np.int64) + 1)
+    estimated_value = h * np.sum(f(new_X[1:-1]))
+    return estimated_value
 
 def task_6():
     """
@@ -47,14 +54,16 @@ def task_6():
         R = 10 ** (find_position_of_first_non_zero(pre_estimation) - 1) / 2
         M_1 = 0
         h = 0
-        if x != 0:
+        if x != 0 and x != X[-1]:
             M_1 = np.tan(x)
-            j = 10
-            while M_1 > 20 and j > 0:
-                M_1 = np.tan(x - 10 ** (-j))
-                j -= 1
             h = 2 * R / (M_1 * x)
             estimation = left_rectangle(func, x, h)
+        elif x == X[-1]:
+            M_1 = - 1 / np.tan(x) + 1 / x
+            h = R / (M_1 * x)
+            I_1 = 0.861811
+            I_2 = left_rectangle_skip_zero(I_2_func, x, h)
+            estimation = I_1 + I_2
         else:
             estimation = pre_estimation
 
@@ -93,10 +102,10 @@ def task_6():
     ax.set_xticks(custom_xticks)
     ax.set_xticklabels(custom_xticklabels, rotation=45, fontsize=8) 
 
-    custom_yticks = real_values
-    custom_yticklabels = [f'{yi:.2f}' for yi in y1]
-    ax.set_yticks(custom_yticks)
-    ax.set_yticklabels(custom_yticklabels)
+    # custom_yticks = real_values
+    # custom_yticklabels = [f'{yi:.2f}' for yi in y1]
+    # ax.set_yticks(custom_yticks)
+    # ax.set_yticklabels(custom_yticklabels)
 
     # Display the plot
     plt.show()
